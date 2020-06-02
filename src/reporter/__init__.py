@@ -1,5 +1,7 @@
+import os
 from typing import Iterator
 
+import sentry_sdk
 from fastapi import Depends, FastAPI
 from sqlalchemy.orm import Session
 
@@ -7,6 +9,9 @@ from . import models, schemas, slack
 from .db import SessionLocal, engine
 
 models.Base.metadata.create_all(bind=engine)
+
+if sentry_dsn := os.environ.get("SENTRY_DSN"):
+    sentry_sdk.init(sentry_dsn)
 
 
 app = FastAPI()
@@ -56,8 +61,8 @@ def report_view(report: schemas.Report, db: Session = db_dependency) -> models.R
     db.refresh(db_report)
 
     try:
-        slack.notify(report)
+        slack.notify(db_report)
     except Exception:
-        pass
+        sentry_sdk.capture_exception()
 
     return db_report
