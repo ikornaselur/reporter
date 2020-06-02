@@ -33,7 +33,7 @@ async def home() -> str:
     return "Hia!"
 
 
-@app.post("/report", response_model=schemas.Report)
+@app.post("/pytyper", response_model=schemas.Report)
 def report_view(report: schemas.Report, db: Session = db_dependency) -> models.Report:
     existing = (
         db.query(models.Report)
