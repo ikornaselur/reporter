@@ -16,3 +16,6 @@ install_git_hooks:
 
 dev:
 	poetry run uvicorn reporter.main:app --reload
+
+deploy:
+	git push dokku master
